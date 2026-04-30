@@ -1,3 +1,4 @@
+![TeamsReaver Banner](https://i.imgur.com/xuGHbkh.jpeg)
 # TeamsReaver: Teams Forensic Investigation & Data Export Tool
 
 **TeamsReaver** é uma ferramenta de perícia computacional e exfiltração de dados desenvolvida para análise, busca e extração automatizada de informações do Microsoft Teams através da Microsoft Graph API.
