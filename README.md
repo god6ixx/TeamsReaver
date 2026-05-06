@@ -20,29 +20,48 @@ A ferramenta oferece três modos principais de operação para investigações:
 1.  **Defensivo (Hunting, CTI, DLP e Blue Team):** Projetado para investigações onde o Microsoft Purview se mostra limitado. O Purview pode levar horas para processar buscas e frequentemente entrega resultados fragmentados. O TeamsReaver entrega os dados de forma imediata, organizada em pastas e com todos os anexos vinculados.
 2.  **Ofensivo (Pentesters e Red Teamers):** Essencial em cenários de Cloud Pentest. Se uma Enterprise Application for comprometida com permissões de leitura, a ferramenta permite exfiltrar comunicações sensíveis de forma rápida e silenciosa.
 
-## Como Utilizar
+## Instalação e Configuração
 
-### Exemplos Práticos
+### Via Pip (Recomendado)
+
+Agora você pode instalar o **TeamsReaver** diretamente via pip:
 
 ```bash
-# Busca termos especificos em um usuario alvo:
-python TeamsReaver.py -TargetUPN usuario -SearchTerms "senha","chave"
-
-# Busca um termo em TODOS os usuarios em uma data especifica:
-python TeamsReaver.py -SearchTerms "senha" -Date "01/05/2026"
-
-# Extrai toda a conversa entre dois usuarios:
-python TeamsReaver.py -TargetUPN usuario -TargetTwo outro_usuario
-
-# Busca parcial (ex: AKIA) em todos nos ultimos 30 dias:
-python TeamsReaver.py -SearchTerms "AKIA" -Fast 30
-
-# Busca por um nome de arquivo especifico em todo o tenant:
-python TeamsReaver.py -SearchTerms "relatorio.xlsx"
-
-# Busca combinando alvo, termo e data:
-python TeamsReaver.py -TargetUPN "admin" -SearchTerms "backup" -Date "20/04/2026"
+pip install teamsreaver
 ```
+
+Após a instalação, o comando `teamsreaver` estará disponível globalmente no seu terminal. Você não precisa mais baixar o script manualmente ou rodar com `python3 script.py`.
+
+> **Dica (Windows/Linux/Mac):** Caso receba um erro de "comando não encontrado" após instalar, você pode rodar a ferramenta utilizando o Python diretamente:
+> ```bash
+> python -m teamsreaver -TargetUPN usuario ...
+> ```
+
+### Adicionando ao PATH (Caso o comando acima falhe)
+
+Se você deseja usar apenas o comando `teamsreaver` e o sistema não o reconhecer, adicione a pasta de scripts do Python ao seu PATH:
+
+#### Windows (PowerShell)
+```powershell
+# Descubra onde o Python guarda os scripts
+$path = python -c "import sysconfig; print(sysconfig.get_path('scripts'))"
+# Adicione ao PATH do usuário atual
+[Environment]::SetEnvironmentVariable("Path", $env:Path + ";$path", "User")
+```
+*Reinicie o terminal após rodar os comandos.*
+
+#### Linux / macOS (Bash/Zsh)
+```bash
+# Adicione ao seu .bashrc ou .zshrc
+echo 'export PATH="$PATH:$(python3 -m site --user-base)/bin"' >> ~/.zshrc
+source ~/.zshrc
+```
+
+### Configuração Inicial
+
+Na primeira execução, a ferramenta iniciará um **modo interativo** no terminal solicitando as credenciais da sua Enterprise Application no Azure (`Client ID`, `Secret`, `Tenant ID` e o `Domínio Padrão`). 
+
+As configurações serão salvas automaticamente em `~/.reaverconf` no seu diretório de usuário.
 
 ## Configuração de Permissões (Microsoft Graph)
 
@@ -61,20 +80,31 @@ A ferramenta requer permissões de nível de **Application** no Microsoft Graph:
 *   Se possuir apenas `Chat.Read.All`, a ferramenta extrairá todos os textos, mas não baixará os arquivos.
 *   Caso tenha apenas acesso a arquivos (`Files.Read.All`) sem acesso aos chats, utilize a ferramenta **GraphDump** ([LINK_AQUI]).
 
-## Instalação e Configuração Inicial
+---
 
-1.  **Requisitos:** Python 3.8+
-2.  **Dependências:** No terminal, execute `pip install -r requirements.txt`.
-3.  **Configuração Facilitada (Auto-Setup):** 
-    Na primeira execução, se a ferramenta não encontrar o arquivo `.reaverconf`, ela iniciará um **modo interativo** no terminal solicitando o `Client ID`, `Secret`, `Tenant ID` e o `Domínio Padrão`. O arquivo será criado automaticamente e salvo para uso futuro.
+## Como Utilizar
 
-    *Caso prefira configurar manualmente, basta criar o arquivo `.reaverconf` na raiz com o seguinte formato:*
-    ```text
-    CLIENT_ID = "seu_id"
-    CLIENT_SECRET = "seu_secret"
-    TENANT_ID = "seu_tenant"
-    DEFAULT_DOMAIN = "@empresa.com.br"
-    ```
+### Exemplos Práticos
+
+```bash
+# Busca termos especificos em um usuario alvo:
+teamsreaver -TargetUPN usuario -SearchTerms "senha","chave"
+
+# Busca um termo em TODOS os usuarios em uma data especifica:
+teamsreaver -SearchTerms "senha" -Date "01/05/2026"
+
+# Extrai toda a conversa entre dois usuarios:
+teamsreaver -TargetUPN usuario -TargetTwo outro_usuario
+
+# Busca parcial (ex: AKIA) em todos nos ultimos 30 dias:
+teamsreaver -Fast 30 -SearchTerms "AKIA"
+
+# Busca por um nome de arquivo especifico em todo o tenant:
+teamsreaver -SearchTerms "relatorio.xlsx"
+
+# Busca combinando alvo, termo e data:
+teamsreaver -TargetUPN "admin" -SearchTerms "backup" -Date "20/04/2026"
+```
 
 ## Estrutura de Exportação
 
