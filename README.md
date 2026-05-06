@@ -1,4 +1,5 @@
 ![TeamsReaver Banner](https://i.imgur.com/xuGHbkh.jpeg)
+
 # TeamsReaver: Teams Forensic Investigation & Data Export Tool
 
 **TeamsReaver** é uma ferramenta de perícia computacional e exfiltração de dados desenvolvida para análise, busca e extração automatizada de informações do Microsoft Teams através da Microsoft Graph API.
@@ -7,7 +8,7 @@
 
 A ferramenta oferece três modos principais de operação para investigações:
 
-*   **Busca por Termos com Extração de Contexto:** Ao realizar uma busca por termos (ex: `apikey`, `secretkey`, `password`), a ferramenta não extrai apenas a mensagem isolada. Caso um "match" seja encontrado, o histórico completo daquela conversa é baixado automaticamente para que o analista tenha o contexto total da exposição.
+*   **Busca por Termos e Arquivos com Extração de Contexto:** Ao realizar uma busca por termos (ex: `apikey`, `senha`) ou nomes de arquivos específicos (ex: `documento.pdf`, `planilha.xlsx`), a ferramenta não extrai apenas a mensagem ou anexo isolado. Caso um "match" seja encontrado no conteúdo da mensagem ou no nome de um arquivo, o histórico completo daquela conversa é baixado automaticamente, incluindo todos os anexos vinculados.
 *   **Extração Completa 1:1:** Permite baixar todo o histórico de mensagens e arquivos trocados entre dois usuários específicos, sendo ideal para investigações direcionadas de conduta ou vazamento de informações.
 *   **Flexibilidade de Varredura Temporal:**
     *   **Deep Sweep (Padrão):** Se nenhum filtro de data for aplicado, a ferramenta realiza uma varredura completa desde a primeira mensagem do usuário.
@@ -24,17 +25,23 @@ A ferramenta oferece três modos principais de operação para investigações:
 ### Exemplos Práticos
 
 ```bash
-# Busca por múltiplos termos sensíveis em um alvo (Ex: Hunting de credenciais)
-python TeamsReaver.py -TargetUPN usuario -SearchTerms "apikey","secretkey","access_token","password","senha_servidor"
+# Busca termos especificos em um usuario alvo:
+python TeamsReaver.py -TargetUPN usuario -SearchTerms "senha","chave"
 
-# Extração total de histórico entre dois alvos (Ex: Investigação de fraude)
-python TeamsReaver.py -TargetUPN alvo_principal -TargetTwo cumplice
+# Busca um termo em TODOS os usuarios em uma data especifica:
+python TeamsReaver.py -SearchTerms "senha" -Date "01/05/2026"
 
-# Investigação de incidente ocorrido na última semana
-python TeamsReaver.py -TargetUPN usuario -SearchTerms "vazamento","confidencial" -Fast 7
+# Extrai toda a conversa entre dois usuarios:
+python TeamsReaver.py -TargetUPN usuario -TargetTwo outro_usuario
 
-# Busca em uma data específica de um log de acesso
-python TeamsReaver.py -TargetUPN usuario -SearchTerms "login" -Date "29/04/2026"
+# Busca parcial (ex: AKIA) em todos nos ultimos 30 dias:
+python TeamsReaver.py -SearchTerms "AKIA" -Fast 30
+
+# Busca por um nome de arquivo especifico em todo o tenant:
+python TeamsReaver.py -SearchTerms "relatorio.xlsx"
+
+# Busca combinando alvo, termo e data:
+python TeamsReaver.py -TargetUPN "admin" -SearchTerms "backup" -Date "20/04/2026"
 ```
 
 ## Configuração de Permissões (Microsoft Graph)
